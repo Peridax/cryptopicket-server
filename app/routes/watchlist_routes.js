@@ -49,6 +49,18 @@ router.get('/watchlist/:id', requireToken, (req, res, next) => {
     .catch(next)
 })
 
+// Update Watchlist
+router.patch('/watchlist/:id', requireToken, (req, res, next) => {
+  delete req.body.watchlist.owner
+
+  Watchlist.findById(req.params.id)
+    .then(handle404)
+    .then(watchlist => requireOwnership(req, watchlist))
+    .then(watchlist => watchlist.updateOne(req.body.watchlist))
+    .then(watchlist => res.status(200).json({ watchlist }))
+    .catch(next)
+})
+
 // Delete watchlist
 router.delete('/watchlist/:id', requireToken, (req, res, next) => {
   Watchlist.findById(req.params.id)
