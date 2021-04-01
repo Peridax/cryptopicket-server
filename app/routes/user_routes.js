@@ -129,12 +129,20 @@ router.patch('/change-password', requireToken, (req, res, next) => {
     .catch(next)
 })
 
+// Sign out
 router.delete('/sign-out', requireToken, (req, res, next) => {
   // create a new random token for the user, invalidating the current one
   req.user.token = null
   // save the token and respond with 204
   req.user.save()
     .then(() => res.sendStatus(204))
+    .catch(next)
+})
+
+// Verify token
+router.post('/verify-token', requireToken, (req, res, next) => {
+  User.findById(req.user._id)
+    .then(user => res.status(200).json({ user: user.toObject() }))
     .catch(next)
 })
 
